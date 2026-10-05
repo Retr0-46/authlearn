@@ -1,0 +1,31 @@
+package auth
+
+import (
+	"errors"
+	"time"
+)
+
+var (
+	ErrWrongIdentificator = errors.New("wrong identificator given")
+	ErrUserNotFound       = errors.New("user not found")
+	ErrUserAlreadyExist   = errors.New("user with this username already exists")
+	ErrPasswordMismatch   = errors.New("password mismatch")
+	ErrTooLongPassword    = errors.New("too long password")
+	ErrEmptyUsername      = errors.New("empty username given")
+	ErrTooShortPassword   = errors.New("too short password")
+)
+
+type User struct {
+	Id           int64
+	Username     string
+	PasswordHash string
+	IsActive     bool
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
+}
+
+type LoginResult struct {
+	user        User
+	AccessToken string
+	ExpiresAt   time.Time
+}
