@@ -13,6 +13,8 @@ var (
 	ErrTooLongPassword    = errors.New("too long password")
 	ErrEmptyUsername      = errors.New("empty username given")
 	ErrTooShortPassword   = errors.New("too short password")
+	ErrInvalidAccessToken = errors.New("invalid access token")
+	ErrInvalidTokenSub    = errors.New("invalid token subject")
 )
 
 type User struct {

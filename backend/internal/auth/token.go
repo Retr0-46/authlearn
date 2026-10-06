@@ -9,6 +9,7 @@ import (
 
 type TokenManagerInterface interface {
 	IssueAccessToken(user User) (AccessToken, error)
+	VerifyAccessToken(raw string) (int64, error)
 }
 
 type TokenManager struct {
@@ -46,4 +47,30 @@ func (tm *TokenManager) IssueAccessToken(user User) (AccessToken, error) {
 	}
 
 	return AccessToken{signedToken, expiresAt}, nil
+}
+
+func (tm *TokenManager) VerifyAccessToken(raw string) (int64, error) {
+	claims := &jwt.RegisteredClaims{}
+
+	token, err := jwt.ParseWithClaims(raw, claims, func(t *jwt.Token) (any, error) { return tm.secret, nil },
+		jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Alg()}),
+		jwt.WithIssuer("authlearn"),
+		jwt.WithAudience("authlearn-api"),
+		jwt.WithExpirationRequired(),
+		jwt.WithIssuedAt(),
+	)
+	if err != nil {
+		return 0, err
+	}
+
+	if !token.Valid {
+		return 0, ErrInvalidAccessToken
+	}
+
+	userID, err := strconv.ParseInt(claims.Subject, 10, 64)
+	if err != nil || userID <= 0 {
+		return 0, ErrInvalidTokenSub
+	}
+
+	return userID, nil
 }

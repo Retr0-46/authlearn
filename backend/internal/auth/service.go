@@ -8,6 +8,7 @@ import (
 type ServiceInterface interface {
 	Register(ctx context.Context, username, password string) (User, error)
 	Login(ctx context.Context, username, password string) (LoginResult, error)
+	GetUserInfo(ctx context.Context, userID int64) (User, error)
 }
 
 type Service struct {
@@ -66,4 +67,14 @@ func (s *Service) Login(ctx context.Context, username, password string) (LoginRe
 	}
 
 	return LoginResult{user, token.Value, token.ExpiresAt}, err
+}
+
+func (s *Service) GetUserInfo(ctx context.Context, userID int64) (User, error) {
+	user, err := s.repo.GetUser(ctx, userID)
+
+	if err != nil {
+		return User{}, err
+	}
+
+	return user, nil
 }
